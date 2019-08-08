@@ -155,7 +155,7 @@ const Mutation = new GraphQLObjectType({
   		name: { type: new GraphQLNonNull(GraphQLString) },
   		cost: { type: new GraphQLNonNull(GraphQLInt) },
   		idHotel: { type: new GraphQLNonNull(GraphQLID) },
-  		available: { type: GraphQLID }
+  		available: { type: GraphQLNonNull(GraphQLID) }
   	  },
   	  resolve(parent, args) {
   	  	let cell = new Cell({
@@ -171,21 +171,28 @@ const Mutation = new GraphQLObjectType({
     updateCell: {
       type: CellType,
       args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
+        id: { name: 'id', type: new GraphQLNonNull(GraphQLID) },
         available: { type: new GraphQLNonNull(GraphQLID) }
       },
       resolve(parent, args) {
-        return Cell.updateOne({ id: args.id }, 
-          { $set: { 
-            available: args.available 
-          } }
-        );
+        return Cell.findByIdAndUpdate(
+        	args.id, 
+          { $set: { available: args.available } },
+          { new: true }
+        ).catch(err => new Error(err));
       }
     }
   }
-})
+});
 
 module.exports = new GraphQLSchema({
   query: RootQuery,
   mutation: Mutation
 });
+
+// mutation {
+// 	updateCell(id:"5d4bd8efca67e203b0858840", available:"0d4bd8wfca67e203b0158840"){
+// 		id
+//   }
+// }
+
