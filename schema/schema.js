@@ -181,6 +181,20 @@ const Mutation = new GraphQLObjectType({
           { new: true }
         ).catch(err => new Error(err));
       }
+    },
+    updateUser: {
+      type: UserType,
+      args: {
+        id: { name: 'id', type: new GraphQLNonNull(GraphQLID) },
+        purse: { type: new GraphQLNonNull(GraphQLInt) }
+      },
+      resolve(parent, args) {
+        return User.findByIdAndUpdate(
+        	args.id, 
+          { $set: { purse: args.purse } },
+          { new: true }
+        ).catch(err => new Error(err));
+      }
     }
   }
 });
